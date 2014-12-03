@@ -1,0 +1,5 @@
+{
+	"ImportPath": "github.com/heroku/json2envdir",
+	"GoVersion": "go1.3.2",
+	"Deps": []
+}
