@@ -56,7 +56,7 @@ deb: bin/json2envdir
 	echo "$$DEB_CONTROL" > $(controldir)/control
 	mkdir -p $(installpath)
 	install bin/json2envdir $(installpath)/json2envdir
-	fakeroot dpkg-deb -Z xz --build $(tempdir) .
+	fakeroot dpkg-deb -Z gzip --build $(tempdir) .
 	rm -rf $(tempdir)
 
 clean:
