@@ -11,7 +11,7 @@ In goes json, out goes envdir.
     "MYVAR": "123", 
     ...
   },
-  "path-perms": 0755  // optional
-  "file-perms": 0644  // optional
+  "path-perms": "0755",  // optional
+  "file-perms": "0644"  // optional
 }
 ```

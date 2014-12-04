@@ -6,11 +6,12 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strconv"
 )
 
 var (
-	FilePerms os.FileMode = 0644
-	PathPerms os.FileMode = 0755
+	FilePerms os.FileMode = 0640
+	PathPerms os.FileMode = 0750
 	Path      string
 	Env       map[string]interface{}
 	JSON      map[string]interface{}
@@ -21,11 +22,19 @@ func Parse(rawJSON string) error {
 
 	Path = JSON["path"].(string)
 	Env = JSON["env"].(map[string]interface{})
-	if perm, ok := JSON["path-perms"]; ok {
-		PathPerms = perm.(os.FileMode)
+	if str, ok := JSON["path-perms"]; ok {
+		perm, err := strconv.ParseUint(str.(string), 8, 32)
+		if err != nil {
+			return err
+		}
+		PathPerms = os.FileMode(perm)
 	}
-	if perm, ok := JSON["file-perms"]; ok {
-		FilePerms = perm.(os.FileMode)
+	if str, ok := JSON["file-perms"]; ok {
+		perm, err := strconv.ParseUint(str.(string), 8, 32)
+		if err != nil {
+			return err
+		}
+		FilePerms = os.FileMode(perm)
 	}
 
 	os.MkdirAll(Path, PathPerms)
