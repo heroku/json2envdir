@@ -6,42 +6,29 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strconv"
+
+	"github.com/heroku/json2envdir/config"
 )
 
 var (
-	FilePerms os.FileMode = 0640
-	PathPerms os.FileMode = 0750
-	Path      string
-	Env       map[string]interface{}
-	JSON      map[string]interface{}
+	Name string
+	Env  map[string]interface{}
+	JSON map[string]interface{}
 )
 
-func Parse(rawJSON string) error {
+func Parse(cfg config.Config, rawJSON string) error {
 	json.Unmarshal([]byte(rawJSON), &JSON)
 
-	Path = JSON["path"].(string)
+	Name = JSON["name"].(string)
 	Env = JSON["env"].(map[string]interface{})
-	if str, ok := JSON["path-perms"]; ok {
-		perm, err := strconv.ParseUint(str.(string), 8, 32)
-		if err != nil {
-			return err
-		}
-		PathPerms = os.FileMode(perm)
-	}
-	if str, ok := JSON["file-perms"]; ok {
-		perm, err := strconv.ParseUint(str.(string), 8, 32)
-		if err != nil {
-			return err
-		}
-		FilePerms = os.FileMode(perm)
-	}
 
-	os.MkdirAll(Path, PathPerms)
+	envCfg := cfg.GetEnv(Name)
+
+	os.MkdirAll(envCfg.Path, envCfg.PathPerms)
 
 	for key := range Env {
 		value := fmt.Sprintf("%v", Env[key])
-		ioutil.WriteFile(filepath.Join(Path, key), []byte(value), FilePerms)
+		ioutil.WriteFile(filepath.Join(envCfg.Path, key), []byte(value), envCfg.FilePerms)
 	}
 
 	return nil

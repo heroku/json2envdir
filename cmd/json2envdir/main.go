@@ -5,11 +5,13 @@ import (
 	"os"
 
 	"github.com/heroku/json2envdir"
+	"github.com/heroku/json2envdir/config"
 	flag "github.com/ogier/pflag"
 )
 
 var (
-	jsonFile = flag.String("file", "-", "file with JSON environment")
+	jsonFile   = flag.String("file", "-", "file with JSON environment")
+	configFile = flag.String("config", "", "config file")
 )
 
 func readStdin() string {
@@ -31,9 +33,11 @@ func readFile(filename string) string {
 func main() {
 	flag.Parse()
 
+	cfg := config.LoadConfig(*configFile)
+
 	if *jsonFile == "-" {
-		json2envdir.Parse(readStdin())
+		json2envdir.Parse(cfg, readStdin())
 	} else {
-		json2envdir.Parse(readFile(*jsonFile))
+		json2envdir.Parse(cfg, readFile(*jsonFile))
 	}
 }
