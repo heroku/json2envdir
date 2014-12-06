@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	DefaultConfigFile             = "/etc/json2env.conf"
+	DefaultConfigFile             = "/etc/json2envdir.conf"
 	DefaultFilePerms  os.FileMode = 0640
 	DefaultPathPerms  os.FileMode = 0750
 )
