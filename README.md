@@ -2,16 +2,32 @@
 
 In goes json, out goes envdir.
 
-## Format
+## JSON Format
 
 ```json
 {
-  "path": "/etc/myapp/env.d",
+  "name: "myapp",
   "env": {
     "MYVAR": "123", 
     ...
-  },
-  "path-perms": "0755",  // optional
-  "file-perms": "0644"  // optional
+  }
 }
+```
+
+## Config File Format
+
+```
+[envdir "webapp"]
+path = /www/webapp/env.d
+
+[envdir "myapp"]
+path = /etc/myapp/env.d
+file-perms = 0640
+path-perms = 0750
+```
+
+## Usage
+
+```bash
+json2envdir --file=app-env.json
 ```
