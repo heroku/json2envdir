@@ -16,7 +16,7 @@ In goes json, out goes envdir.
 
 ## Config File Format
 
-**Default Config File**: `/etc/json2env.conf`
+**Default Config File**: `/etc/json2envdir.conf`
 
 ```
 [envdir "webapp"]
