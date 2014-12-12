@@ -6,7 +6,7 @@ In goes json, out goes envdir.
 
 ```json
 {
-  "name: "myapp",
+  "name": "myapp",
   "env": {
     "MYVAR": "123", 
     ...
