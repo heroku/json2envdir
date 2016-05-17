@@ -2,6 +2,7 @@ package main
 
 import (
 	"io/ioutil"
+	"log"
 	"os"
 
 	"github.com/heroku/json2envdir"
@@ -35,9 +36,14 @@ func main() {
 
 	cfg := config.LoadConfig(*configFile)
 
+	var err error
 	if *jsonFile == "-" {
-		json2envdir.Parse(cfg, readStdin())
+		err = json2envdir.Parse(cfg, readStdin())
 	} else {
-		json2envdir.Parse(cfg, readFile(*jsonFile))
+		err = json2envdir.Parse(cfg, readFile(*jsonFile))
+	}
+
+	if err != nil {
+		log.Fatal(err)
 	}
 }
