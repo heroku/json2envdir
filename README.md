@@ -9,10 +9,13 @@ In goes json, out goes envdir.
   "name": "myapp",
   "env": {
     "MYVAR": "123",
+    "MYVAR_TMPL": "{{.UUID}} 123",
     ...
   }
 }
 ```
+
+Notice that you can have dynamic value in an env var value. The format is in Go template. Currently only `{{.UUID}}` is supported.
 
 ## Config File Format
 
