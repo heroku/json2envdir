@@ -3,32 +3,61 @@ package json2envdir
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"html/template"
 	"os"
 	"path/filepath"
 
 	"github.com/heroku/json2envdir/config"
+	"github.com/satori/go.uuid"
 )
 
-var (
-	Name string
-	Env  map[string]interface{}
-	JSON map[string]interface{}
-)
+type JSON struct {
+	Name string                 `json:"name"`
+	Env  map[string]interface{} `json:"env"`
+}
+
+// Funcs is a set of functions that can be used in
+// the template value of an env var
+type Funcs struct {
+}
+
+func (f Funcs) UUID() string {
+	u := uuid.NewV4()
+	return u.String()
+}
 
 func Parse(cfg config.Config, rawJSON string) error {
-	json.Unmarshal([]byte(rawJSON), &JSON)
+	var j JSON
+	err := json.Unmarshal([]byte(rawJSON), &j)
+	if err != nil {
+		return err
+	}
 
-	Name = JSON["name"].(string)
-	Env = JSON["env"].(map[string]interface{})
+	envCfg := cfg.GetEnv(j.Name)
+	err = os.MkdirAll(envCfg.Path, envCfg.PathPerms)
+	if err != nil {
+		return err
+	}
 
-	envCfg := cfg.GetEnv(Name)
+	funcs := Funcs{}
+	for key := range j.Env {
+		value := fmt.Sprintf("%v", j.Env[key])
+		tmpl, err := template.New("").Parse(value)
+		if err != nil {
+			return err
+		}
 
-	os.MkdirAll(envCfg.Path, envCfg.PathPerms)
+		f, err := os.OpenFile(filepath.Join(envCfg.Path, key), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, envCfg.FilePerms)
+		if err != nil {
+			return err
+		}
 
-	for key := range Env {
-		value := fmt.Sprintf("%v", Env[key])
-		ioutil.WriteFile(filepath.Join(envCfg.Path, key), []byte(value), envCfg.FilePerms)
+		err = tmpl.Execute(f, funcs)
+		if err != nil {
+			return err
+		}
+
+		f.Close()
 	}
 
 	return nil

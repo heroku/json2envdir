@@ -5,7 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	"code.google.com/p/gcfg"
+	"gopkg.in/gcfg.v1"
 )
 
 var (

@@ -3,12 +3,12 @@ SHELL = /bin/sh
 GO_PACKAGES := $(shell go list ./... | sed 's_github.com/heroku/json2envdir_._')
 GO_GIT_DESCRIBE_SYMBOL ?= github.com/heroku/json2envdir/config.version
 GO_GIT_DESCRIBE := $(shell git describe --tags --always)
-GO_BUILD_FLAGS := -ldflags "-X $(GO_GIT_DESCRIBE_SYMBOL) $(GO_GIT_DESCRIBE)"
+GO_BUILD_FLAGS := -ldflags "-X $(GO_GIT_DESCRIBE_SYMBOL)=$(GO_GIT_DESCRIBE)"
 
 all: build
 
-build: godep
-	godep go install $(GO_BUILD_FLAGS) ./...
+build:
+	go install $(GO_BUILD_FLAGS) ./...
 
 imports:
 	goimports -w $(GO_PACKAGES)
@@ -18,10 +18,6 @@ tidy: goimports
 
 lint: golint
 	test -z "$$(golint ./... | tee /dev/stderr)"
-
-# dependencies
-godep:
-	go get github.com/tools/godep
 
 goimports:
 	go get code.google.com/p/go.tools/cmd/goimports
