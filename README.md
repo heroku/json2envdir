@@ -8,7 +8,7 @@ In goes json, out goes envdir.
 {
   "name": "myapp",
   "env": {
-    "MYVAR": "123", 
+    "MYVAR": "123",
     ...
   }
 }
