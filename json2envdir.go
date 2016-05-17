@@ -11,11 +11,10 @@ import (
 	"github.com/satori/go.uuid"
 )
 
-var (
-	Name string
-	Env  map[string]interface{}
-	JSON map[string]interface{}
-)
+type JSON struct {
+	Name string                 `json:"name"`
+	Env  map[string]interface{} `json:"env"`
+}
 
 // Funcs is a set of functions that can be used in
 // the template value of an env var
@@ -28,18 +27,21 @@ func (f Funcs) UUID() string {
 }
 
 func Parse(cfg config.Config, rawJSON string) error {
-	json.Unmarshal([]byte(rawJSON), &JSON)
+	var j JSON
+	err := json.Unmarshal([]byte(rawJSON), &j)
+	if err != nil {
+		return err
+	}
 
-	Name = JSON["name"].(string)
-	Env = JSON["env"].(map[string]interface{})
-
-	envCfg := cfg.GetEnv(Name)
-
-	os.MkdirAll(envCfg.Path, envCfg.PathPerms)
+	envCfg := cfg.GetEnv(j.Name)
+	err = os.MkdirAll(envCfg.Path, envCfg.PathPerms)
+	if err != nil {
+		return err
+	}
 
 	funcs := Funcs{}
-	for key := range Env {
-		value := fmt.Sprintf("%v", Env[key])
+	for key := range j.Env {
+		value := fmt.Sprintf("%v", j.Env[key])
 		tmpl, err := template.New("").Parse(value)
 		if err != nil {
 			return err
