@@ -1,9 +1,9 @@
 SHELL = /bin/sh
 
+GO_LINKER_SYMBOL := main.version
+GO_BUILD_ENV := GOOS=linux GOARCH=amd64
+
 GO_PACKAGES := $(shell go list ./... | sed 's_github.com/heroku/json2envdir_._')
-GO_GIT_DESCRIBE_SYMBOL ?= github.com/heroku/json2envdir/config.version
-GO_GIT_DESCRIBE := $(shell git describe --tags --always)
-GO_BUILD_FLAGS := -ldflags "-X $(GO_GIT_DESCRIBE_SYMBOL)=$(GO_GIT_DESCRIBE)"
 
 all: build
 
@@ -26,40 +26,26 @@ golint:
 	go get github.com/golang/lint/golint
 
 
-# build stuff
-
-debversion   := $(shell cat config.version)
-tempdir      := $(shell mktemp -d)
-controldir   := $(tempdir)/DEBIAN
-installpath  := $(tempdir)/usr/bin
-buildpath    := .build
-buildpackage := $(buildpath)/cache
-
-define DEB_CONTROL
-Package: json2envdir
-Version: $(debversion)
-Architecture: amd64
-Maintainer: "Ricardo Chimal, Jr." <ricardo@heroku.com>
-Section: heroku
-Priority: optional
-Description: JSON to envdir style directories
-endef
-export DEB_CONTROL
-
-deb: bin/json2envdir
+deb: tmp ldflags ver
 	echo "making deb"
-	mkdir -p -m 0755 $(controldir)
-	echo "$$DEB_CONTROL" > $(controldir)/control
-	mkdir -p $(installpath)
-	install bin/json2envdir $(installpath)/json2envdir
-	fakeroot dpkg-deb -Z gzip --build $(tempdir) .
-	rm -rf $(tempdir)
+	$(eval DEB_ROOT := "${TMP}/DEBIAN")
+	${GO_BUILD_ENV} go build -v -o ${TMP}/usr/bin/json2envdir ${LDFLAGS} ./cmd/json2envdir
+	mkdir -p ${DEB_ROOT}
+	cat misc/DEBIAN.control | sed s/{{VERSION}}/${VERSION}/ > ${DEB_ROOT}/control
+	dpkg-deb -Zgzip -b ${TMP} json2envdir_${VERSION}_amd64.deb
+	rm -rf ${TMP}
+
+tmp:
+	$(eval TMP := $(shell mktemp -d -t json2envdir.XXXXX))
+
+ldflags: glv
+	$(eval LDFLAGS := -ldflags "-X ${GO_LINKER_SYMBOL}=${GO_LINKER_VALUE}")
+
+glv:
+	$(eval GO_LINKER_VALUE := $(shell git describe --tags --always))
+
+ver: glv
+	$(eval VERSION := $(shell echo ${GO_LINKER_VALUE} | sed s/^v//))
 
 clean:
-	rm -rf $(buildpath)
 	rm -f json2envdir*.deb
-
-bin/json2envdir:
-	git clone git://github.com/heroku/heroku-buildpack-go.git $(buildpath)
-	$(buildpath)/bin/compile . $(buildpackcache)
-
