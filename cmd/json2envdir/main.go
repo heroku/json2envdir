@@ -12,8 +12,8 @@ import (
 )
 
 var (
-	jsonFile   = flag.String("file", "-", "file with JSON environment")
-	configFile = flag.String("config", "", "config file")
+	jsonFile    = flag.StringP("file", "f", "-", "file with JSON environment")
+	configFile  = flag.StringP("config", "c", config.DefaultConfigFile, "config file")
 	versionFlag = flag.BoolP("version", "v", false, "show version")
 	version     = "dev"
 )
