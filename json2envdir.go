@@ -1,9 +1,11 @@
 package json2envdir
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -34,31 +36,32 @@ func Parse(cfg config.Config, rawJSON string) error {
 	}
 
 	envCfg := cfg.GetEnv(j.Name)
-	err = os.MkdirAll(envCfg.Path, envCfg.PathPerms)
-	if err != nil {
-		return err
-	}
-
 	funcs := Funcs{}
 	for key := range j.Env {
 		value := fmt.Sprintf("%v", j.Env[key])
+
+		var result bytes.Buffer
 		tmpl, err := template.New("").Parse(value)
 		if err != nil {
 			return err
 		}
-
-		f, err := os.OpenFile(filepath.Join(envCfg.Path, key), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, envCfg.FilePerms)
+		err = tmpl.Execute(&result, funcs)
 		if err != nil {
 			return err
 		}
 
-		err = tmpl.Execute(f, funcs)
-		if err != nil {
-			return err
+		for _, path := range envCfg.Path {
+			err = os.MkdirAll(path, envCfg.PathPerms)
+			if err != nil {
+				return err
+			}
+
+			err = ioutil.WriteFile(filepath.Join(path, key), result.Bytes(), envCfg.PathPerms)
+			if err != nil {
+				return err
+			}
 		}
 
-		f.Close()
 	}
-
 	return nil
 }
