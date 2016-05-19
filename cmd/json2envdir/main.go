@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -13,6 +14,8 @@ import (
 var (
 	jsonFile   = flag.String("file", "-", "file with JSON environment")
 	configFile = flag.String("config", "", "config file")
+	versionFlag = flag.BoolP("version", "v", false, "show version")
+	version     = "dev"
 )
 
 func readStdin() string {
@@ -33,6 +36,11 @@ func readFile(filename string) string {
 
 func main() {
 	flag.Parse()
+
+	if *versionFlag {
+		fmt.Println(version)
+		return
+	}
 
 	cfg := config.LoadConfig(*configFile)
 
