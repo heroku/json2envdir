@@ -15,7 +15,7 @@ In goes json, out goes envdir.
 }
 ```
 
-Notice that you can have dynamic value for an env var. The format is in Go template. Currently only `{{.UUID}}` is supported.
+Notice that you can have dynamic value for an env var. The format is in Go template. Currently `{{.UUID}}` and `{{.Env NAME}}` is supported.
 
 ## Config File Format
 
