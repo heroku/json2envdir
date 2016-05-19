@@ -18,6 +18,9 @@ func TestParse(t *testing.T) {
 	}
 	defer os.RemoveAll(dir)
 
+	os.Setenv("FOO", "BAR")
+	defer os.Setenv("FOO", "")
+
 	cfg := config.Config{
 		Sections: map[string]*config.EnvDirSection{
 			"myapp": &config.EnvDirSection{
@@ -29,7 +32,8 @@ func TestParse(t *testing.T) {
 		"name": "myapp",
 		"env": {
 			"MYVAR": "123",
-			"MYVAR_TMPL": "{{.UUID}} 123"
+			"MYVAR_TMPL": "{{.UUID}} 123",
+			"MYVAR_ENV": "{{.Env \"FOO\"}} 123"
 		}
 	}`)
 	if err != nil {
@@ -55,5 +59,13 @@ func TestParse(t *testing.T) {
 	}
 	if parts[1] != "123" {
 		t.Fatalf("Value of $MYVAR_TMPL should contain 123, but it's %s", b)
+	}
+
+	b, err = ioutil.ReadFile(filepath.Join(dir, "MYVAR_ENV"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(b) != "BAR 123" {
+		t.Fatalf("Value of $MYVAR_ENV should equal to BAR 123, but it's %s", b)
 	}
 }

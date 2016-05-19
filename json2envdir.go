@@ -26,6 +26,10 @@ func (f Funcs) UUID() string {
 	return u.String()
 }
 
+func (f Funcs) Env(name string) string {
+	return os.Getenv(name)
+}
+
 func Parse(cfg config.Config, rawJSON string) error {
 	var j JSON
 	err := json.Unmarshal([]byte(rawJSON), &j)
