@@ -19,7 +19,7 @@ type Config struct {
 }
 
 type EnvDirSection struct {
-	Path            string
+	Path            []string
 	PathPermsString string `gcfg:"path-perms"`
 	FilePermsString string `gcfg:"file-perms"`
 

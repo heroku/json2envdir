@@ -26,7 +26,8 @@ Notice that you can have dynamic value for an env var. The format is in Go templ
 path = /www/webapp/env.d
 
 [envdir "myapp"]
-path = /etc/myapp/env.d
+path = /etc/myapp1/env.d
+path = /etc/myapp2/env.d
 file-perms = 0640
 path-perms = 0750
 ```

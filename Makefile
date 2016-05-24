@@ -7,8 +7,8 @@ GO_PACKAGES := $(shell go list ./... | sed 's_github.com/heroku/json2envdir_._')
 
 all: build
 
-build:
-	go install $(GO_BUILD_FLAGS) ./...
+build: ldflags
+	go build -o ./bin/json2envdir ${LDFLAGS} ./cmd/json2envdir/
 
 imports:
 	goimports -w $(GO_PACKAGES)
@@ -24,7 +24,6 @@ goimports:
 
 golint:
 	go get github.com/golang/lint/golint
-
 
 deb: tmp ldflags ver
 	echo "making deb"
