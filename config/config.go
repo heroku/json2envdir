@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"os"
 	"strconv"
 
@@ -46,14 +45,15 @@ func LoadConfig(configFile string) Config {
 	return cfg
 }
 
-// GetEnv returns the requested EnvDirSection. If non exist it will return an error.
-func (cfg Config) GetEnv(env string) (*EnvDirSection, error) {
+// GetEnv attempts to return the requested EnvDirSection and a boolean representing if the section was found.
+// The caller should verify the section was found.
+func (cfg Config) GetEnv(env string) (*EnvDirSection, bool) {
 	if conf, ok := cfg.Sections[env]; ok {
 		conf.parsePerms()
-		return conf, nil
+		return conf, true
 	}
 
-	return nil, fmt.Errorf("envdir '%s' not found in config", env)
+	return nil, false
 }
 
 func parsePerms(perms string, def os.FileMode) os.FileMode {

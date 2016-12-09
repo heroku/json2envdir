@@ -38,8 +38,8 @@ func Process(cfg config.Config, rawJSON string) error {
 		return err
 	}
 
-	envCfg, err := cfg.GetEnv(p.Name)
-	if err != nil {
+	envCfg, found := cfg.GetEnv(p.Name)
+	if !found {
 		fmt.Printf("Skipping unconfigured entry: %s", p.Name)
 		return nil
 	}
