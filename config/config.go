@@ -40,12 +40,13 @@ func LoadConfig(configFile string) Config {
 	return cfg
 }
 
-func (cfg Config) GetEnv(env string) EnvDirSection {
+func (cfg Config) GetEnv(env string) (EnvDirSection, error) {
 	if conf, ok := cfg.Sections[env]; ok {
 		conf.ParsePerms()
-		return *conf
+		return *conf, nil
 	}
-	panic(fmt.Sprintf("envdir '%s' not found in config", env))
+
+	return EnvDirSection{}, fmt.Errorf("envdir '%s' not found in config", env)
 }
 
 func ParsePerms(perms string, def os.FileMode) os.FileMode {
