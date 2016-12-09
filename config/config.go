@@ -9,15 +9,20 @@ import (
 )
 
 var (
-	DefaultConfigFile             = "/etc/json2envdir.conf"
-	DefaultFilePerms  os.FileMode = 0640
-	DefaultPathPerms  os.FileMode = 0750
+	// DefaultConfigFile is the default place json2envdir will look if
+	// no config is passed in via a cli flag.
+	DefaultConfigFile = "/etc/json2envdir.conf"
+
+	defaultFilePerms os.FileMode = 0640
+	defaultPathPerms os.FileMode = 0750
 )
 
+// Config holds parsed config.
 type Config struct {
 	Sections map[string]*EnvDirSection `gcfg:"envdir"`
 }
 
+// EnvDirSection represents a configured envdir diretive in the config.
 type EnvDirSection struct {
 	Path            []string
 	PathPermsString string `gcfg:"path-perms"`
@@ -27,6 +32,7 @@ type EnvDirSection struct {
 	FilePerms os.FileMode
 }
 
+// LoadConfig loads the specified config file. If an error is encountered the program will panic.
 func LoadConfig(configFile string) Config {
 	if len(configFile) < 1 {
 		configFile = DefaultConfigFile
@@ -40,16 +46,17 @@ func LoadConfig(configFile string) Config {
 	return cfg
 }
 
-func (cfg Config) GetEnv(env string) (EnvDirSection, error) {
+// GetEnv returns the requested EnvDirSection. If non exist it will return an error.
+func (cfg Config) GetEnv(env string) (*EnvDirSection, error) {
 	if conf, ok := cfg.Sections[env]; ok {
-		conf.ParsePerms()
-		return *conf, nil
+		conf.parsePerms()
+		return conf, nil
 	}
 
-	return EnvDirSection{}, fmt.Errorf("envdir '%s' not found in config", env)
+	return nil, fmt.Errorf("envdir '%s' not found in config", env)
 }
 
-func ParsePerms(perms string, def os.FileMode) os.FileMode {
+func parsePerms(perms string, def os.FileMode) os.FileMode {
 	if len(perms) > 0 {
 		p, err := strconv.ParseUint(perms, 8, 32)
 		if err != nil {
@@ -60,7 +67,7 @@ func ParsePerms(perms string, def os.FileMode) os.FileMode {
 	return def
 }
 
-func (e *EnvDirSection) ParsePerms() {
-	e.PathPerms = ParsePerms(e.PathPermsString, DefaultPathPerms)
-	e.FilePerms = ParsePerms(e.FilePermsString, DefaultFilePerms)
+func (e *EnvDirSection) parsePerms() {
+	e.PathPerms = parsePerms(e.PathPermsString, defaultPathPerms)
+	e.FilePerms = parsePerms(e.FilePermsString, defaultFilePerms)
 }
