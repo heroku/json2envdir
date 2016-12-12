@@ -21,7 +21,7 @@ Notice that you can have dynamic value for an env var. The format is in Go templ
 
 **Default Config File**: `/etc/json2envdir.conf`
 
-```
+```ini
 [envdir "webapp"]
 path = /www/webapp/env.d
 

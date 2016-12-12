@@ -10,6 +10,33 @@ import (
 	"github.com/satori/go.uuid"
 )
 
+func TestParseNoConfig(t *testing.T) {
+	testDir, err := ioutil.TempDir("", "json2envdirTest")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = os.RemoveAll(testDir) }()
+
+	cfg := config.Config{
+		Sections: map[string]*config.EnvDirSection{
+			"cheetah": &config.EnvDirSection{
+				Path: []string{testDir},
+			},
+		},
+	}
+
+	err = Process(cfg, `{
+		"name": "not-cheetah",
+		"env": {
+			"VAR": "{{.UUID}}"
+		}
+	}`)
+
+	if err != nil {
+		t.Fatalf("Unexpected failure: %q", err)
+	}
+}
+
 func TestParse(t *testing.T) {
 	dir1, err := ioutil.TempDir("", "json2envdir1")
 	if err != nil {
@@ -30,7 +57,7 @@ func TestParse(t *testing.T) {
 			},
 		},
 	}
-	err = Parse(cfg, `{
+	err = Process(cfg, `{
 		"name": "myapp",
 		"env": {
 			"MYVAR": "123",

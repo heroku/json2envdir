@@ -13,7 +13,7 @@ import (
 	"github.com/satori/go.uuid"
 )
 
-type JSON struct {
+type payload struct {
 	Name string                 `json:"name"`
 	Env  map[string]interface{} `json:"env"`
 }
@@ -23,22 +23,30 @@ type JSON struct {
 type Funcs struct {
 }
 
+// UUID is a function exposed to the templates for generating a UUIDv4
 func (f Funcs) UUID() string {
 	u := uuid.NewV4()
 	return u.String()
 }
 
-func Parse(cfg config.Config, rawJSON string) error {
-	var j JSON
-	err := json.Unmarshal([]byte(rawJSON), &j)
+// Process parses and populates the envdirs specified in the config if matching
+// data is found in the json payload.
+func Process(cfg config.Config, rawJSON string) error {
+	var p payload
+	err := json.Unmarshal([]byte(rawJSON), &p)
 	if err != nil {
 		return err
 	}
 
-	envCfg := cfg.GetEnv(j.Name)
+	envCfg, found := cfg.GetEnv(p.Name)
+	if !found {
+		fmt.Printf("Skipping unconfigured entry: %s", p.Name)
+		return nil
+	}
+
 	funcs := Funcs{}
-	for key := range j.Env {
-		value := fmt.Sprintf("%v", j.Env[key])
+	for key := range p.Env {
+		value := fmt.Sprintf("%v", p.Env[key])
 
 		var result bytes.Buffer
 		tmpl, err := template.New("").Parse(value)

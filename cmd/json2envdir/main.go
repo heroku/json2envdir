@@ -46,9 +46,9 @@ func main() {
 
 	var err error
 	if *jsonFile == "-" {
-		err = json2envdir.Parse(cfg, readStdin())
+		err = json2envdir.Process(cfg, readStdin())
 	} else {
-		err = json2envdir.Parse(cfg, readFile(*jsonFile))
+		err = json2envdir.Process(cfg, readFile(*jsonFile))
 	}
 
 	if err != nil {
