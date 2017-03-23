@@ -2,6 +2,8 @@ package json2envdir
 
 import (
 	"bytes"
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -27,6 +29,13 @@ type Funcs struct {
 func (f Funcs) UUID() string {
 	u := uuid.NewV4()
 	return u.String()
+}
+
+// Hex allows templates to generate a hex of a specific length
+func (f Funcs) Hex(length int) string {
+	randomBytes := make([]byte, length)
+	rand.Read(randomBytes)
+	return hex.EncodeToString(randomBytes)
 }
 
 // Process parses and populates the envdirs specified in the config if matching

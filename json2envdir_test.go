@@ -61,7 +61,8 @@ func TestParse(t *testing.T) {
 		"name": "myapp",
 		"env": {
 			"MYVAR": "123",
-			"MYVAR_TMPL": "{{.UUID}}"
+			"MYVAR_TMPL": "{{.UUID}}",
+			"MYVAR_HEX": "{{.Hex 32}}"
 		}
 	}`)
 	if err != nil {
@@ -85,6 +86,14 @@ func TestParse(t *testing.T) {
 		t.Fatalf("Value of $MYVAR_TMPL in dir1 should contain a UUID")
 	}
 
+	hex1, err := ioutil.ReadFile(filepath.Join(dir1, "MYVAR_HEX"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(hex1) != 64 {
+		t.Fatalf("Length of $MYVAR_HEX in dir1 should be 64, got: %d", len(hex1))
+	}
+
 	b, err = ioutil.ReadFile(filepath.Join(dir2, "MYVAR"))
 	if err != nil {
 		t.Fatal(err)
@@ -100,6 +109,14 @@ func TestParse(t *testing.T) {
 	uuid2, err := uuid.FromString(string(b))
 	if err != nil {
 		t.Fatalf("Value of $MYVAR_TMPL in dir2 should contain a UUID")
+	}
+
+	hex2, err := ioutil.ReadFile(filepath.Join(dir2, "MYVAR_HEX"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(hex2) != 64 {
+		t.Fatalf("Length of $MYVAR_HEX in dir1 should be 64, got: %d", len(hex1))
 	}
 
 	if uuid1 != uuid2 {
