@@ -62,7 +62,7 @@ func TestParse(t *testing.T) {
 		"env": {
 			"MYVAR": "123",
 			"MYVAR_TMPL": "{{.UUID}}",
-			"MYVAR_HEX": "{{.Hex 32}}"
+			"MYVAR_HEX": "{{.HEX 32}}"
 		}
 	}`)
 	if err != nil {
