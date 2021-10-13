@@ -1,7 +1,0 @@
-Package: json2envdir
-Version: {{VERSION}}
-Architecture: amd64
-Maintainer: "Ricardo Chimal, Jr." <ricardo@heroku.com>
-Section: heroku
-Priority: optional
-Description: JSON to envdir style directories
