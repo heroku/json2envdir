@@ -1,0 +1,6 @@
+
+json2envdir (2.0.1) focal; urgency=medium
+
+  * fix config path
+
+ -- Ricardo Chimal Jr. <rchimal@salesforce.com>  Wed, 13 Oct 2021 14:27:23 +0200
