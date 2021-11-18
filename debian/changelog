@@ -1,0 +1,12 @@
+json2envdir (3.0.0) focal; urgency=medium
+
+  * Merge pull request #6 from heroku/amerine-do-not-panic-when-no-config
+  * fix: Don't panic on unknown names.
+
+ -- Mark Turner <mark.turner@salesforce.com> Wed, 13 Oct 2021 18:51:10 +0200
+
+json2envdir (2.0.1) focal; urgency=medium
+
+  * fix config path
+
+ -- Ricardo Chimal Jr. <rchimal@salesforce.com>  Wed, 13 Oct 2021 14:27:23 +0200
