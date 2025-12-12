@@ -16,7 +16,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: install dependencies
-        run: sudo apt-get update && apt-get install -y dh-golang git vim devscripts equivs build-essential golang-1.13-go golang-1.13-src golang-any golang-go golang-src
+        run: sudo apt-get update && sudo apt-get install -y dh-golang git vim devscripts equivs build-essential golang-1.13-go golang-1.13-src golang-any golang-go golang-src
       - name: Install packagecloud
         run: gem install package_cloud
       - name: build packagemk-build-deps
