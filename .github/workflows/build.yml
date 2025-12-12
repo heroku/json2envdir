@@ -24,7 +24,7 @@ jobs:
           sudo debuild -i -us -uc -b
       - name: push package to packagecloud
         run: |
-          SUPPORTED_UBUNTU_VERSIONS="trusty focal"
+          SUPPORTED_UBUNTU_VERSIONS="focal noble"
           for ubuntu_version in ${SUPPORTED_UBUNTU_VERSIONS}
           do
             package_cloud push --skip-errors --yes ${PACKAGECLOUD_REPO}/ubuntu/${ubuntu_version} ../*.deb
