@@ -5,3 +5,5 @@
 
 %:
 	dh $@ --builddirectory=_build --buildsystem=golang
+
+override_dh_dwz:
